@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../constants/api_keys.dart';
-// we’ll create these models soon – for now you can comment them if needed.
 import '../../models/current_weather.dart';
 import '../../models/forecast_day.dart';
 import '../../models/hourly_weather.dart';
@@ -10,7 +9,7 @@ import '../../models/hourly_weather.dart';
 class WeatherApi {
   static const String _baseUrl = 'https://api.weatherapi.com/v1';
 
-  // Current weather for a single city
+  // ---------------- CITY WEATHER ----------------
   static Future<CurrentWeather> getCurrentWeather(String city) async {
     final url = Uri.parse(
       '$_baseUrl/current.json?key=${ApiKeys.weatherApiKey}&q=$city',
@@ -26,7 +25,26 @@ class WeatherApi {
     return CurrentWeather.fromJson(data);
   }
 
-  // 3-day forecast for a city
+  // ---------------- GPS WEATHER ----------------
+  static Future<CurrentWeather> getWeatherByCoordinates(
+    double lat,
+    double lon,
+  ) async {
+    final url = Uri.parse(
+      '$_baseUrl/current.json?key=${ApiKeys.weatherApiKey}&q=$lat,$lon',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load location weather');
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return CurrentWeather.fromJson(data);
+  }
+
+  // ---------------- 3-DAY FORECAST ----------------
   static Future<List<ForecastDay>> get3DayForecast(String city) async {
     final url = Uri.parse(
       '$_baseUrl/forecast.json?key=${ApiKeys.weatherApiKey}&q=$city&days=3',
@@ -46,7 +64,7 @@ class WeatherApi {
         .toList();
   }
 
-  // Hourly forecast for the coming 24 hours
+  // ---------------- HOURLY FORECAST ----------------
   static Future<List<HourlyWeather>> getHourly(String city) async {
     final url = Uri.parse(
       '$_baseUrl/forecast.json?key=${ApiKeys.weatherApiKey}&q=$city&hours=24',

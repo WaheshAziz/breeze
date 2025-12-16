@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/api/weather_api.dart';
 import '../../models/current_weather.dart';
 import '../forecast/forecast_screen.dart';
+import '../../widgets/app_drawer.dart';
+
 
 class CitiesScreen extends StatefulWidget {
   const CitiesScreen({super.key});
@@ -46,7 +48,11 @@ class _CitiesScreenState extends State<CitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Cities")),
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(title: const Text("Cities"),
+      centerTitle: true,
+        backgroundColor: Colors.blue),
+      drawer: const AppDrawer(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -58,8 +64,11 @@ class _CitiesScreenState extends State<CitiesScreen> {
                   leading: Image.network(item.iconUrl),
                   title: Text(item.cityName),
                   subtitle: Text("${item.temperature}°C — ${item.condition}"),
-                  // 🔽 Your "More Info" button goes here
+                  //  "More Info" button 
                   trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
                     onPressed: () {
                       Navigator.push(
                         context,

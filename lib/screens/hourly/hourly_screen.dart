@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/api/weather_api.dart';
 import '../../models/hourly_weather.dart';
+import '../../widgets/app_drawer.dart';
+
 
 class HourlyScreen extends StatefulWidget {
   final String city;
@@ -36,8 +38,12 @@ class _HourlyScreenState extends State<HourlyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Hourly - ${widget.city}")),
-      body: loading
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(title: Text("Hourly - ${widget.city}"),
+      centerTitle: true,
+        backgroundColor: Colors.blue),
+      drawer: const AppDrawer(),
+        body: loading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: hours.length,
@@ -45,8 +51,8 @@ class _HourlyScreenState extends State<HourlyScreen> {
                 final hour = hours[index];
                 return ListTile(
                   leading: Image.network(hour.iconUrl),
-                  title: Text("${hour.time}"),
-                  subtitle: Text("${hour.condition}"),
+                  title: Text(hour.time),
+                  subtitle: Text(hour.condition),
                 trailing: Text("${hour.temp}°C"),
                 );
               },

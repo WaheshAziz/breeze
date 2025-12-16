@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../core/api/weather_api.dart';
-import '../../models/current_weather.dart';
-import '../cities/cities_screen.dart'; // YOU NEED THIS IMPORT
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../providers/weather_provider.dart';
+import '../cities/cities_screen.dart';
+import '../../widgets/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,78 +14,112 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  CurrentWeather? weather;
-  bool loading = false;
-
   @override
   void initState() {
     super.initState();
-    fetchWeather();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WeatherProvider>().fetchWeather("London");
+    });
   }
 
-  Future<void> fetchWeather() async {
-    setState(() => loading = true);
-
-    try {
-      final result = await WeatherApi.getCurrentWeather("London");
-      setState(() {
-        weather = result;
-        loading = false;
-      });
-    } catch (e) {
-      setState(() => loading = false);
-      print("ERROR: $e");
-    }
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<WeatherProvider>();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Breeze"),
-      ),
+      backgroundColor: Colors.grey.shade100,
+      drawer: const AppDrawer(),
+      appBar: AppBar(title: const Text("Breeze"),
+      centerTitle: true,
+        backgroundColor: Colors.blue),
       body: Center(
-        child: loading
+        child: provider.isLoading
             ? const CircularProgressIndicator()
-            : weather == null
+            : provider.currentWeather == null
                 ? const Text("Failed to load weather.")
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        weather!.cityName,
+                        provider.currentWeather!.cityName,
                         style: const TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold),
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "${weather!.temperature}°C",
+                        "${provider.currentWeather!.temperature}°C",
                         style: const TextStyle(fontSize: 40),
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        weather!.condition,
+                        provider.currentWeather!.condition,
                         style: const TextStyle(fontSize: 22),
                       ),
                       const SizedBox(height: 20),
-                      Image.network(weather!.iconUrl),
+                      Image.network(provider.currentWeather!.iconUrl),
 
-                      // ✅ BUTTON ADDED HERE — EXACT PLACE YOU NEED
                       const SizedBox(height: 30),
+
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          ),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const CitiesScreen()),
+                              builder: (_) => const CitiesScreen(),
+                            ),
                           );
                         },
                         child: const Text("Choose City"),
                       ),
+
+                      const SizedBox(height: 10),
+
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                         ),
+                        onPressed: () {
+                          context
+                              .read<WeatherProvider>()
+                              .fetchWeatherByLocation();
+                        },
+                        child: const Text("Use My Location"),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                         ),
+                          onPressed: provider.latitude == null || provider.longitude == null
+                              ? null
+                              : () async {
+                                  final lat = provider.latitude!;
+                                  final lon = provider.longitude!;
+
+                                  final url = Uri.parse(
+                                    "https://www.google.com/maps/search/?api=1&query=$lat,$lon",
+                                  );
+
+                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                                    debugPrint("Could not open map");
+                                  }
+                                },
+                          child: const Text("Show Weather Map"),
+                        ),
+
+
                     ],
                   ),
       ),
     );
   }
 }
-

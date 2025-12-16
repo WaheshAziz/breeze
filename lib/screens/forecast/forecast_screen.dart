@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/api/weather_api.dart';
 import '../../models/forecast_day.dart';
 import '../hourly/hourly_screen.dart';
+import '../../widgets/app_drawer.dart';
 
 class ForecastScreen extends StatefulWidget {
   final String city;
@@ -31,14 +34,29 @@ class _ForecastScreenState extends State<ForecastScreen> {
       });
     } catch (e) {
       setState(() => loading = false);
+      // ignore: avoid_print
       print("FORECAST ERROR: $e");
+    }
+  }
+
+  Future<void> _openWeatherMap() async {
+    final uri = Uri.parse(
+      'https://www.weatherapi.com/weather/q/${Uri.encodeComponent(widget.city)}',
+    );
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      print('Could not open weather map');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("${widget.city} — 3-Day Forecast")),
+      backgroundColor: Colors.grey.shade100,
+      appBar: AppBar(title: Text("${widget.city} — 3-Day Forecast"),
+      centerTitle: true,
+        backgroundColor: Colors.blue),
+      drawer: const AppDrawer(),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -59,20 +77,42 @@ class _ForecastScreenState extends State<ForecastScreen> {
                   ),
                 ),
 
-                // ---------- HOURLY FORECAST BUTTON ----------
+                // bottom buttons: map + hourly
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              HourlyScreen(city: widget.city),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                             backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white
+                              ),
+                          onPressed: _openWeatherMap,
+                          child: const Text("Open Weather Map"),
                         ),
-                      );
-                    },
-                    child: const Text("View Hourly Forecast"),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HourlyScreen(city: widget.city),
+                              ),
+                            );
+                          },
+                          child: const Text("View Hourly Forecast"),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -80,3 +120,4 @@ class _ForecastScreenState extends State<ForecastScreen> {
     );
   }
 }
+
