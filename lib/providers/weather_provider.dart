@@ -16,7 +16,7 @@ class WeatherProvider extends ChangeNotifier {
   double? get latitude => _lat;
   double? get longitude => _lon;
 
-  // -------- CITY WEATHER --------
+  // -------- CITY weather --------
   Future<void> fetchWeather(String city) async {
     _loading = true;
     notifyListeners();
@@ -31,7 +31,7 @@ class WeatherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // -------- GPS WEATHER --------
+  // -------- GPS weather --------
   Future<void> fetchWeatherByLocation() async {
     _loading = true;
     notifyListeners();

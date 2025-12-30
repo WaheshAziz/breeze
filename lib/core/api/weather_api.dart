@@ -9,7 +9,7 @@ import '../../models/hourly_weather.dart';
 class WeatherApi {
   static const String _baseUrl = 'https://api.weatherapi.com/v1';
 
-  // ---------------- CITY WEATHER ----------------
+  // ---------------- City weather ----------------
   static Future<CurrentWeather> getCurrentWeather(String city) async {
     final url = Uri.parse(
       '$_baseUrl/current.json?key=${ApiKeys.weatherApiKey}&q=$city',
@@ -25,7 +25,7 @@ class WeatherApi {
     return CurrentWeather.fromJson(data);
   }
 
-  // ---------------- GPS WEATHER ----------------
+  // ---------------- GPS weather ----------------
   static Future<CurrentWeather> getWeatherByCoordinates(
     double lat,
     double lon,
@@ -44,7 +44,7 @@ class WeatherApi {
     return CurrentWeather.fromJson(data);
   }
 
-  // ---------------- 3-DAY FORECAST ----------------
+  // ---------------- 3-DAY forecast ----------------
   static Future<List<ForecastDay>> get3DayForecast(String city) async {
     final url = Uri.parse(
       '$_baseUrl/forecast.json?key=${ApiKeys.weatherApiKey}&q=$city&days=3',
@@ -64,7 +64,7 @@ class WeatherApi {
         .toList();
   }
 
-  // ---------------- HOURLY FORECAST ----------------
+  // ---------------- Hourly Forecast ----------------
   static Future<List<HourlyWeather>> getHourly(String city) async {
     final url = Uri.parse(
       '$_baseUrl/forecast.json?key=${ApiKeys.weatherApiKey}&q=$city&hours=24',

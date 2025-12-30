@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 30),
 
-                      // 🔹 Choose city
+                      //  Choose city
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 10),
 
-                      // 🔹 GPS weather
+                      //  GPS weather
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 10),
 
-                      // 🔹 Windy map (external browser)
+                      //  Windy map 
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
