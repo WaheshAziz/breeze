@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
- 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<WeatherProvider>();
@@ -31,9 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       drawer: const AppDrawer(),
-      appBar: AppBar(title: const Text("Breeze"),
-      centerTitle: true,
-        backgroundColor: Colors.blue),
+      appBar: AppBar(
+        title: const Text("Breeze"),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
       body: Center(
         child: provider.isLoading
             ? const CircularProgressIndicator()
@@ -64,10 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 30),
 
+                      // 🔹 Choose city
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                        ),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -81,10 +84,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 10),
 
+                      // 🔹 GPS weather
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                         ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
+                        ),
                         onPressed: () {
                           context
                               .read<WeatherProvider>()
@@ -95,31 +100,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 10),
 
+                      // 🔹 Windy map (external browser)
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                         ),
-                          onPressed: provider.latitude == null || provider.longitude == null
-                              ? null
-                              : () async {
-                                  final lat = provider.latitude!;
-                                  final lon = provider.longitude!;
-
-                                  final url = Uri.parse(
-                                    "https://www.google.com/maps/search/?api=1&query=$lat,$lon",
-                                  );
-
-                                  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-                                    debugPrint("Could not open map");
-                                  }
-                                },
-                          child: const Text("Show Weather Map"),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
                         ),
+                        onPressed: provider.latitude == null ||
+                                provider.longitude == null
+                            ? null
+                            : () async {
+                                final lat = provider.latitude!;
+                                final lon = provider.longitude!;
 
+                                final url = Uri.parse(
+                                  "https://www.windy.com/?lat=$lat&lon=$lon&zoom=6",
+                                );
 
+                                if (!await launchUrl(
+                                  url,
+                                  mode: LaunchMode.externalApplication,
+                                )) {
+                                  debugPrint("Could not open Windy map");
+                                }
+                              },
+                        child: const Text("Show Weather Map"),
+                      ),
                     ],
                   ),
       ),
     );
   }
 }
+
